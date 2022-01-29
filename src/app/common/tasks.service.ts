@@ -31,10 +31,23 @@ export class TaskService {
     }
 
     getAll(date: moment.Moment): Observable<Task[]> {
-        return this.http.get<Task[]>(`${TaskService.url}/${date.format('DD-MM-YYYY')}.json`)
+        return this.http
+        .get<Task[]>(`${TaskService.url}/${date.format('DD-MM-YYYY')}.json`)
         .pipe(map(tasks => {
             if(!tasks) return []
-            return Object.keys(tasks).map((key) => ({...tasks[key], id: key }))
+            const keys = Object.keys(tasks)
+            console.log(keys)
+            return Object.keys(tasks).map((key: any) => {
+                const curr = tasks[key];
+                return {
+                    id: key,
+                    ...curr
+                }
+            })
         }))
+    }
+
+    remove(task: Task): Observable<void> {
+        return this.http.delete<void>(`${TaskService.url}/${task.date}/${task.id}.json`)
     }
 }
